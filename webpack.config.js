@@ -23,7 +23,7 @@ module.exports = {
 			}
 		],
 	},
-	plugins:[
+	plugins: [
 		new WebpackBar({
 			name: 'PuffinJS',
 		})

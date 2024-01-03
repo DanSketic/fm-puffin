@@ -1,93 +1,92 @@
 import element from './element'
 
 window.prouter = {
-	links:[],
-	boxes:[]
+	links: [],
+	boxes: []
 }
 
-function renderBox(_box,_path){
+function renderBox(_box, _path) {
 	hideRoutes(_box)
-	showRoute(_box,_path)	
+	showRoute(_box, _path)
 }
 
-function showRoute(_box,route,display){
-	Object.keys(_box.children).map( n => {
+function showRoute(_box, route, display) {
+	Object.keys(_box.children).map(n => {
 		const routeNode = _box.children[n]
 		const routeEndpoint = simulateLocation(routeNode.getAttribute("from"))
 		const simulatedDefaultRouter = simulateLocation(_box.getAttribute("default"))
 		const simulatedCurrentRoute = simulateLocation(route)
-		if( simulatedCurrentRoute.match(routeEndpoint) ){
+		if (simulatedCurrentRoute.match(routeEndpoint)) {
 			routeNode.style.display = "block"
-			const event = new CustomEvent('displayed', { });
+			const event = new CustomEvent('displayed', {});
 			routeNode.dispatchEvent(event);
-			activeLink(_box.getAttribute("group"),simulatedCurrentRoute)
+			activeLink(_box.getAttribute("group"), simulatedCurrentRoute)
 			history.replaceState({}, "", route)
-		}else if( routeEndpoint.match(simulatedCurrentRoute) && location.toString() === simulatedCurrentRoute){
+		} else if (routeEndpoint.match(simulatedCurrentRoute) && location.toString() === simulatedCurrentRoute) {
 			routeNode.style.display = "block"
-			const event = new CustomEvent('displayed', { });
+			const event = new CustomEvent('displayed', {});
 			routeNode.dispatchEvent(event);
-			activeLink(_box.getAttribute("group"),simulatedDefaultRouter)
-			history.replaceState({}, "",  _box.getAttribute("default"))
+			activeLink(_box.getAttribute("group"), simulatedDefaultRouter)
+			history.replaceState({}, "", _box.getAttribute("default"))
 		}
 	})
 }
 
-function onlyDisplay(_box,route){
+function onlyDisplay(_box, route) {
 	const simulatedDefaultRouter = simulateLocation(_box.getAttribute("default"))
 	const simulatedCurrentRoute = simulateLocation(route)
 	let anyMatch = false
-	Object.keys(_box.children).map( n => {
+	Object.keys(_box.children).map(n => {
 		const routeNode = _box.children[n]
 		const routeEndpoint = simulateLocation(routeNode.getAttribute("from"))
-		if( simulatedCurrentRoute.match(routeEndpoint) ){
+		if (simulatedCurrentRoute.match(routeEndpoint)) {
 			routeNode.style.display = "block"
-			activeLink(_box.getAttribute("group"),routeEndpoint)
+			activeLink(_box.getAttribute("group"), routeEndpoint)
 			anyMatch = true
 		}
 	})
-	if( !anyMatch ){
-		Object.keys(_box.children).map( n => {
+	if (!anyMatch) {
+		Object.keys(_box.children).map(n => {
 			const routeNode = _box.children[n]
 			const routeEndpoint = simulateLocation(routeNode.getAttribute("from"))
-			if( simulatedDefaultRouter.match(routeEndpoint)){
+			if (simulatedDefaultRouter.match(routeEndpoint)) {
 				routeNode.style.display = "block"
-				activeLink(_box.getAttribute("group"),routeEndpoint)
+				activeLink(_box.getAttribute("group"), routeEndpoint)
 			}
 		})
 	}
-
 }
 
 
-function hideRoutes(_box){
-	Object.keys(_box.children).map( n => {
+function hideRoutes(_box) {
+	Object.keys(_box.children).map(n => {
 		const routeNode = _box.children[n]
 		routeNode.style.display = "none"
-		const event = new CustomEvent('hidden', { });
+		const event = new CustomEvent('hidden', {});
 		routeNode.dispatchEvent(event);
 	})
 }
 
-function activeLink(groupLink,routerLink){
-	window.prouter.links.forEach( ({group, node}) => {
-		if(group == groupLink ){
+function activeLink(groupLink, routerLink) {
+	window.prouter.links.forEach(({ group, node }) => {
+		if (group == groupLink) {
 			node.classList.remove('active')
 			const simulatedLinkRoute = simulateLocation(node.getAttribute("to"))
-			if(  routerLink.match(simulatedLinkRoute) ){
+			if (routerLink.match(simulatedLinkRoute)) {
 				node.classList.add('active')
 			}
 		}
 	})
 }
 
-function addLink(group,node){
+function addLink(group, node) {
 	window.prouter.links.push({
 		group,
 		node
 	})
 }
 
-function addBox(group,node,pages){
+function addBox(group, node, pages) {
 	window.prouter.boxes.push({
 		group,
 		node,
@@ -95,73 +94,73 @@ function addBox(group,node,pages){
 	})
 }
 
-function getBox(group){
+function getBox(group) {
 	return window.prouter.boxes.find(box => box.group == group).node
 }
 
-function getBoxRoutes(node){
-	return Object.keys(node.children).map( n => {
+function getBoxRoutes(node) {
+	return Object.keys(node.children).map(n => {
 		const routeNode = node.children[n]
 		return {
-			node:routeNode,
+			node: routeNode,
 			endpoint: routeNode.getAttribute("from")
 		}
 	})
 }
 
-function routerBox(){
-	function mounted(){
+function routerBox() {
+	function mounted() {
 		addBox(
 			this.getAttribute("group"),
 			this,
 			getBoxRoutes(this)
 		)
 		this.render = (_path) => {
-			renderBox(this,_path)
+			renderBox(this, _path)
 		}
 		const { endpoint } = getCurrentLocation()
 		hideRoutes(this)
-		showRoute(this,endpoint)
-		onlyDisplay(this,endpoint)
+		showRoute(this, endpoint)
+		onlyDisplay(this, endpoint)
 
 	}
-	function hidden(){
+	function hidden() {
 		hideRoutes(this)
 	}
 	return element`<div :hidden="${hidden}" mounted="${mounted}"></div>`
 }
 
-const simulateLocation = (route="") => {
+const simulateLocation = (route = "") => {
 	const { fulldomain } = getCurrentLocation()
 	return `${fulldomain}${route}`.trim()
 }
 
-function getCurrentLocation(){
+function getCurrentLocation() {
 	const currentLocation = window.location.toString().split(/(\/)|(#)/g).filter(Boolean)
 	const endpoints = currentLocation.slice(4)
 	return {
 		protocol: currentLocation[0],
-		fulldomain:currentLocation.slice(-currentLocation.length,4).join(""),
-		domain:currentLocation[2],
-		endpoint:window.location.pathname,
+		fulldomain: currentLocation.slice(-currentLocation.length, 4).join(""),
+		domain: currentLocation[2],
+		endpoint: window.location.pathname,
 		endpoints
 	}
 }
 
-function routerLink(){
-	function click(){
+function routerLink() {
+	function click() {
 		const linkEndpoint = this.getAttribute("to")
 		const linkGroup = this.getAttribute("group")
 		const routerBox = getBox(linkGroup)
 		routerBox.render(linkEndpoint)
 	}
-	function mounted(){
+	function mounted() {
 		addLink(
 			this.getAttribute("group"),
 			this
 		)
 		const routeEndpoint = simulateLocation(this.getAttribute("to"))
-		if( window.location.toString().match(routeEndpoint) ){
+		if (window.location.toString().match(routeEndpoint)) {
 			this.classList.add("active")
 		}
 	}

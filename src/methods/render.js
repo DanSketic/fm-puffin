@@ -5,18 +5,18 @@ const createElement = component => {
 	return comp
 }
 
-function render( component, parent, { position } = { position : null}){
+function render(component, parent, { position } = { position: null }) {
 	const comp = createComponent(component.children[0], null, [], [], component.addons)
-	if( position ){
-		parent.insertBefore(comp,parent.children[position])
-	}else{
+	if (position) {
+		parent.insertBefore(comp, parent.children[position])
+	} else {
 		parent.appendChild(comp)
 	}
 	executeEvents(comp.events)
 	return comp
 }
 
-const executeEvents = events => events.forEach( e => e() )
+const executeEvents = events => events.forEach(e => e())
 
 const createDOMElement = type => {
 	switch (type) {
@@ -40,46 +40,46 @@ const createDOMElement = type => {
 	}
 }
 
-function executeAddons(node, addons = []){
-	addons.forEach( addon => {
+function executeAddons(node, addons = []) {
+	addons.forEach(addon => {
 		addon.iterateElement(node)
 	})
 }
 
-function createComponent( currentElement , componentNode, binds, puffinEvents, addons){
+function createComponent(currentElement, componentNode, binds, puffinEvents, addons) {
 	const currentNode = createDOMElement(currentElement._type)
-	if( currentElement._isElement ){
-		if( !componentNode ){
+	if (currentElement._isElement) {
+		if (!componentNode) {
 			componentNode = currentNode
-		}else{
-			componentNode.appendChild( currentNode )
+		} else {
+			componentNode.appendChild(currentNode)
 		}
 		createUpdateFunction(currentNode)
-		appendProps(currentNode,currentElement,puffinEvents,false,addons)
-		executeAddons(currentNode,addons)
+		appendProps(currentNode, currentElement, puffinEvents, false, addons)
+		executeAddons(currentNode, addons)
 		currentNode.updates.push(() => {
-			appendProps(currentNode,currentElement,[],true,addons)
+			appendProps(currentNode, currentElement, [], true, addons)
 		})
 		currentNode.e = currentElement
-	}else if( !currentElement._isElement && currentElement._type === '__text' ){
-		appendProps(componentNode,currentElement,puffinEvents,false, addons)
-		componentNode.updates.push(()=>{
-			appendProps(componentNode,currentElement,[],true, addons)
+	} else if (!currentElement._isElement && currentElement._type === '__text') {
+		appendProps(componentNode, currentElement, puffinEvents, false, addons)
+		componentNode.updates.push(() => {
+			appendProps(componentNode, currentElement, [], true, addons)
 			componentNode.innerText = currentElement._value
 		})
 		componentNode.innerText += currentElement._value
 	}
-	currentElement.children.map(child => createComponent( child, currentNode, binds, puffinEvents,addons ))
+	currentElement.children.map(child => createComponent(child, currentNode, binds, puffinEvents, addons))
 	componentNode.events = puffinEvents
 	return componentNode
 }
 
 
 const createUpdateFunction = node => {
-	if( !node.updates ){
+	if (!node.updates) {
 		node.updates = []
 	}
-	if( !node.update ){
+	if (!node.update) {
 		node.update = () => {
 			node.updates.map(update => update())
 		}
@@ -87,32 +87,32 @@ const createUpdateFunction = node => {
 }
 
 
-const appendProps = (node, currentElement, puffinEvents, updating = false, addons) =>{
+const appendProps = (node, currentElement, puffinEvents, updating = false, addons) => {
 	//Comp props are added on construction
 	//textValue is only for __text elements
 	const props = currentElement._props
-	props.map((prop)=>{
+	props.map((prop) => {
 		let textValue = currentElement._value
-		if( !node.props ) node.props = {}
-		switch(prop.type){
+		if (!node.props) node.props = {}
+		switch (prop.type) {
 			case 'puffinEvent':
-				if( prop.key == 'mounted' ) {
-					puffinEvents.push( prop.value.bind(node) )
+				if (prop.key == 'mounted') {
+					puffinEvents.push(prop.value.bind(node))
 				}
 				break;
 			case 'event':
-				if( !updating ) node.addEventListener( prop.key.replace(':',''), (e)=> prop.value.bind(node)(e) )
+				if (!updating) node.addEventListener(prop.key.replace(':', ''), (e) => prop.value.bind(node)(e))
 				break;
 			case 'attributeText':
 				const attrExists = node.getAttribute(prop.key)
 				prop.key = removeSpaces(prop.key)
 				prop.value = removeCommas(`${prop.value}`)
-				if(attrExists){
-					var newValue = node.getAttribute(prop.key).replace(prop.valueIdentifier,prop.value)
-				}else{
-					var newValue = prop.attributeValue.replace(prop.valueIdentifier,prop.value)
+				if (attrExists) {
+					var newValue = node.getAttribute(prop.key).replace(prop.valueIdentifier, prop.value)
+				} else {
+					var newValue = prop.attributeValue.replace(prop.valueIdentifier, prop.value)
 				}
-				node.setAttribute( prop.key, newValue)
+				node.setAttribute(prop.key, newValue)
 				node.props[prop.key] = prop.value
 				break;
 			case 'attributeObject':
@@ -121,53 +121,53 @@ const appendProps = (node, currentElement, puffinEvents, updating = false, addon
 			case 'attributeFunction':
 				var propValue = prop.value()
 				prop.key = removeSpaces(prop.key)
-				if( !node.getAttribute(prop.key) ){
-					var newValue = removeCommas(prop.attributeValue.replace(prop.propIdentifier,propValue))
-					node.setAttribute( prop.key, newValue)
-				}else{
-					var newValue = removeCommas(node.getAttribute(prop.key).replace(prop.propIdentifier,propValue))
-					node.setAttribute( prop.key, newValue)
+				if (!node.getAttribute(prop.key)) {
+					var newValue = removeCommas(prop.attributeValue.replace(prop.propIdentifier, propValue))
+					node.setAttribute(prop.key, newValue)
+				} else {
+					var newValue = removeCommas(node.getAttribute(prop.key).replace(prop.propIdentifier, propValue))
+					node.setAttribute(prop.key, newValue)
 				}
 				node.props[prop.key] = newValue
 				prop.propIdentifier = propValue
 				break;
 			case 'textPromise':
-				prop.value.then( promiseComp => {
-					render(promiseComp,node)
+				prop.value.then(promiseComp => {
+					render(promiseComp, node)
 				})
-				currentElement._value = textValue.replace( prop.key, '' )
+				currentElement._value = textValue.replace(prop.key, '')
 				break;
 			case 'textFunction':
 				var newValue = prop.value()
-				if( typeof newValue == 'object' ){
-					if(Array.isArray(newValue)){
+				if (typeof newValue == 'object') {
+					if (Array.isArray(newValue)) {
 						newValue.map(item => {
 							setTimeout(() => {
-								item.addons  = [...item.addons, ...addons]
-								render(item,node)
-							},0)
+								item.addons = [...item.addons, ...addons]
+								render(item, node)
+							}, 0)
 						})
-					}else{
+					} else {
 						setTimeout(() => {
-							newValue.addons  = [...newValue.addons, ...addons]
-							render(newValue,node)
-						},0)
+							newValue.addons = [...newValue.addons, ...addons]
+							render(newValue, node)
+						}, 0)
 					}
-					currentElement._value = textValue.replace( prop.key, '' )
-				}else{
-					currentElement._value = textValue.replace( prop.key, newValue )
+					currentElement._value = textValue.replace(prop.key, '')
+				} else {
+					currentElement._value = textValue.replace(prop.key, newValue)
 					prop.key = newValue
 				}
 				break;
 			case 'text':
-				currentElement._value = textValue.replace( prop.key, prop.value )
+				currentElement._value = textValue.replace(prop.key, prop.value)
 				break;
 		}
 	})
 }
-const removeSpaces = str => str.replace(" ","")
+const removeSpaces = str => str.replace(" ", "")
 
-const removeCommas = str => str.replace(/"/gm,"")
+const removeCommas = str => str.replace(/"/gm, "")
 
 export {
 	render,
