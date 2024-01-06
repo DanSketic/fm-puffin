@@ -1,4 +1,4 @@
-const { element, style, state, render } = require("../../src/main.js");
+import { element, style, state, render } from '../../src/main.js'
 
 const styleWrapper = style`
 	& {

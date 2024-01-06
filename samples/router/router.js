@@ -1,4 +1,4 @@
-const { element, render, routerBox, routerLink, router } = require("../../src/main.js");
+import { element, render, routerBox, routerLink } from '../../src/main.js'
 
 function page1(){
 	return element`

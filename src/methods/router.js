@@ -1,4 +1,4 @@
-import element from './element'
+import element from './element.js'
 
 window.prouter = {
 	links: [],

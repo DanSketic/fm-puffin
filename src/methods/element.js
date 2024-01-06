@@ -1,4 +1,4 @@
-import { generateClass, throwError } from '../utils'
+import { generateClass, throwError } from '../utils.js'
 
 function element(input) {
 	if (Array.isArray(input)) {
@@ -142,19 +142,12 @@ const addExternalComponent = (tag, config, where, _closed, _props) => {
 }
 
 const executeEvents = events => events.forEach(e => e())
-
 const purifyString = str => str.replace(/(\t|\r\n|\n|\r|\\)/gm, "")
-
 const removeSpaces = str => str.replace(" ", "")
-
 const removeCommas = str => str.replace(/"/gm, "")
-
 const isElement = tag => tag.search(/(<)|(>)/gm) == 0
-
 const getTag = tag => tag.replace(/([<>/])/gm, "")
-
 const isComponent = comp => Array.isArray(comp) || comp._is === 'puffin'
-
 const isFunctionEvent = name => {
 	if (name == 'mounted') {
 		return true
@@ -166,7 +159,6 @@ const isPromise = func => {
 }
 
 const isOpened = _type => _type[1] !== "/" || _type[_type.length - 2] == "/"
-
 const isClosed = parts => parts[parts.length - 1] === '/>' || parts[0][parts[0].length - 2] == "/" || parts[0][1] == "/"
 
 const addComponents = (props, where) => {

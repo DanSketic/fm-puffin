@@ -166,7 +166,6 @@ const appendProps = (node, currentElement, puffinEvents, updating = false, addon
 	})
 }
 const removeSpaces = str => str.replace(" ", "")
-
 const removeCommas = str => str.replace(/"/gm, "")
 
 export {

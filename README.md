@@ -19,23 +19,37 @@ What does it have?
 * Addons middlewares
 * Language addon
 
+### Install
+
+Install dependencies:
+```shell
+pnpm install
+```
+
+### Build
+
+Build prod:
+```shell
+pnpm build
+```
+
 ### ⚽ Usage
 
 Installing:
 ```shell
-npm install @mkenzo_8/puffin
+npm install @fm2/puffin
 ```
 
 Importing:
 ```javascript
-import { element, style, state, render, routerBox, routerLink, lang } from "@mkenzo_8/puffin"
+import { element, style, state, render, routerBox, routerLink, lang } from "@fm2/puffin"
 ```
 
 **Example projects are located under /samples.**
 
 Example:
 ```javascript
-import { element, style, render } from '@mkenzo_8/puffin'
+import { element, style, render } from '@fm2/puffin'
 
 const myStyles = style`
 	& {

@@ -1,4 +1,4 @@
-import { generateClass } from "../utils"
+import { generateClass } from "../utils.js"
 
 function setClass(element) {
 	const selectedClass = generateClass()
