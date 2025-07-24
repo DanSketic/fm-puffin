@@ -23,14 +23,14 @@ What does it have?
 
 Install dependencies:
 ```shell
-pnpm install
+npm install
 ```
 
 ### Build
 
 Build prod:
 ```shell
-pnpm build
+npm build
 ```
 
 ### ⚽ Usage
@@ -70,7 +70,7 @@ function clickMe(){
 	alert("Hello World!")
 }
 
-render(App(),document.body)
+render(App(), document.body)
 
 ```
 

@@ -51,4 +51,4 @@ const App =  element({
 		</routerBox>
 	</div>`
 
-render(App,document.getElementById("app"))
+render(App, document.getElementById("app"))
