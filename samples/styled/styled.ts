@@ -1,4 +1,4 @@
-import { element, style, state, render } from '../../src/main.js'
+import { element, style, state, render } from '../../src/main'
 
 const styleWrapper = style`
 	& {
@@ -17,4 +17,7 @@ const App = element`
 	</div>
 `
 
-render(App, document.body);
+const appElement = document.getElementById("app");
+if (appElement) {
+    render(App, appElement);
+}

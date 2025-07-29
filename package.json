@@ -1,11 +1,20 @@
 {
 	"name": "@fm2/puffin",
-	"version": "1.1.14",
+	"version": "2.1.2",
 	"description": "A reusable components library for web.",
+	"type": "module",
 	"main": "dist/main.js",
+	"types": "dist/main.d.ts",
+	"files": [
+		"dist",
+		"README.md"
+	],
 	"scripts": {
-		"prepare": "npm run build",
-		"build": "webpack"
+		"dev": "vite",
+		"build": "vite build && tsc --emitDeclarationOnly",
+		"sample:element": "vite --config samples/element/vite.config.js",
+		"sample:router": "vite --config samples/router/vite.config.js",
+		"sample:styled": "vite --config samples/styled/vite.config.js"
 	},
 	"repository": {
 		"type": "git",
@@ -14,17 +23,10 @@
 	"author": "Marc Espín Sanz <mespinsanz@gmail.com>",
 	"license": "MIT",
 	"devDependencies": {
-		"@babel/core": "^7.28.0",
-		"@babel/preset-env": "^7.28.0",
-		"babel-core": "^6.26.3",
-		"babel-loader": "^10.0.0",
-		"babel-polyfill": "^6.26.0",
 		"elliptic": "^6.6.1",
 		"lodash": "^4.17.21",
-		"parcel": "^2.15.4",
-		"webpack": "^5.100.2",
-		"webpack-cli": "^6.0.1",
-		"webpackbar": "^7.0.0"
+		"typescript": "^5.8.3",
+		"vite": "^7.0.6"
 	},
 	"volta": {
 		"node": "22.17.1"
