@@ -45,14 +45,14 @@ export default function state(initialData: Record<string, any> = {}) {
             }
         });
     };
-    const on = (eventName: string | string[], callback?: Function) => {
-        let events: string[] = [];
+    const on = <eventKey extends string | number | symbol>(eventName: eventKey | eventKey[], callback?: (eventArgs: any) => void): { cancel: () => void } => {
+        let events: (string | number | symbol)[] = [];
         if (Array.isArray(eventName)) {
-            events = eventName;
+            events = eventName as (string | number | symbol)[];
         } else {
             events.push(eventName);
         }
-        let eventsToReturn: string[] = [];
+        let eventsToReturn: (string | number | symbol)[] = [];
         let final: any;
         events.forEach(eventToRegister => {
             if (!self.eventCallbacks[eventToRegister]) self.eventCallbacks[eventToRegister] = [];
@@ -64,33 +64,35 @@ export default function state(initialData: Record<string, any> = {}) {
                 eventsToReturn.push(eventToRegister);
             }
         });
-        if (callback) {
-            return {
-                cancel: () => {
+        return {
+            cancel: () => {
+                if (callback) {
                     eventsToReturn.forEach(eventName => {
                         cancelEvent(self.eventCallbacks[eventName], callback);
                     });
                 }
-            };
-        } else {
-            return new Promise(resolve => {
-                final = resolve;
-            });
-        }
+            }
+        };
     };
-    const emit = (eventName: string, data: any) => {
+    const emit = <eventKey extends string | number | symbol>(eventName: eventKey, data?: any) => {
         exeCallbacks(self.eventCallbacks[eventName] || [], data);
     };
-    const triggerChange = (object: any) => {
-        exeCallbacks(self.changedCallbacks, object);
+    const triggerChange = (...args: any[]) => {
+        exeCallbacks(self.changedCallbacks, ...args);
     };
-    const once = (eventName: string, callback: Function) => {
+    const once = <eventKey extends string | number | symbol>(
+        eventName: eventKey,
+        callback: Function
+    ): { cancel: () => void } => {
         if (!self.eventCallbacks[eventName]) self.eventCallbacks[eventName] = [];
         function customCallback(...args: any[]) {
             callback(...args);
             cancelEvent(self.eventCallbacks[eventName], customCallback);
         }
         self.eventCallbacks[eventName].push({ callback: customCallback });
+        return {
+            cancel: () => cancelEvent(self.eventCallbacks[eventName], customCallback)
+        };
     };
     return {
         triggerChange,

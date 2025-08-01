@@ -13,10 +13,13 @@ export interface Tree {
     _is: 'puffin';
     children: PuffinElement[];
     addons: any[];
+    _type: string;
+    _props: ElementProps[];
 }
 
 export interface PuffinElement {
     _type: string;
+    _is: string; // vagy 'puffin' ha fix
     _isElement: boolean;
     _opened: boolean;
     _props: ElementProps[];

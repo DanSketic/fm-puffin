@@ -26,7 +26,6 @@ export default function style(inputCss: TemplateStringsArray | string[], ...args
     const { output, binds } = parseBinds(inputCss, computedArguments);
     const randomClass = generateClass();
     const styleEle = document.createElement('style');
-    styleEle.type = 'text/css';
     styleEle.textContent = output.replace(/&/gm, `.${randomClass}`);
     (styleEle as any).classList = randomClass;
     document.head.appendChild(styleEle);

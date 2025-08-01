@@ -30,7 +30,7 @@ npm install
 
 Build prod:
 ```shell
-npm build
+npm run build
 ```
 
 ### ⚽ Usage

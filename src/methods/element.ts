@@ -15,7 +15,15 @@ function element(input: any, ...args: any[]): any {
     } else if (typeof input === 'object' && !Array.isArray(input) && !(input instanceof String)) {
         // Currying: element(config)
         return function (strings: TemplateStringsArray, ...innerExprs: any[]): Tree {
-            return continueParsing(strings, innerExprs, input);
+            const tree = continueParsing(strings, innerExprs, input);
+            // Ensure all required Tree properties exist
+            tree._opened ??= true;
+            tree._is ??= 'puffin';
+            tree._type ??= 'root';
+            tree._props ??= [];
+            tree.children ??= [];
+            tree.addons ??= input?.addons || [];
+            return tree;
         };
     }
     throw new Error('Invalid arguments for element()');
@@ -55,6 +63,8 @@ function parseHTML(in_HTML: string, binds: any[], config: any = {}): Tree {
     const tree: Tree = {
         _opened: true,
         _is: 'puffin',
+        _type: 'root',
+        _props: [],
         children: [],
         addons: config?.addons || []
     };

@@ -4,6 +4,6 @@ samples
 src
 test
 README.md
-webpack.config.js
+vite.config.js
 .editorconfig
 LICENSE.md
